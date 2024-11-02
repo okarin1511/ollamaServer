@@ -13,7 +13,6 @@ services:
 
   ollama:
     image: ollama/ollama
-    command: ollama run llama3:8b --port 11434
     ports:
       - "11434:11434"
     restart: always
