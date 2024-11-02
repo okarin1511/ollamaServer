@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  reverse-proxy:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - API_KEY=demo
+      - OLLAMA_URL=http://ollama:11434
+    restart: always
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    command: ollama run llama3:8b --port 11434
+    ports:
+      - "11434:11434"
+    restart: always
