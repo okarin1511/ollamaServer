@@ -4,7 +4,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const app = express();
 const PORT = 8080;
 const API_KEY = '9344c017e52349577126ef0a9565a61adacc9ee5d3281b0546f48a2de4b5e7df';
-const OLLAMA_URL = 'http://ollama:11434';
+const OLLAMA_URL = 'http://localhost:11434';
 
 
 function validateApiKey(req, res, next) {
