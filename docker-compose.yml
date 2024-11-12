@@ -3,13 +3,20 @@ version: "3.8"
 services:
   ollama:
     image: ollama/ollama
+    container_name: ollama
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
     ports:
       - "11434:11434"
-    restart: always
-    entrypoint: ["/bin/sh", "-c", "ollama start && ollama run llama3:8b"]
-    networks:
-      - ollama-network
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    entrypoint: ["/root/retry.sh"]
 
-networks:
-  ollama-network:
-    driver: bridge
+volumes:
+  ollama:
