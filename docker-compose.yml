@@ -18,7 +18,7 @@ services:
           cpus: "1.5"
           memory: 8G
     ports:
-      - "11434:11434"
+      - "0:11434"
     volumes:
       - ollama:/root/.ollama
     environment:
