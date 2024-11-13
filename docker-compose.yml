@@ -6,6 +6,7 @@ services:
     container_name: ollama
     restart: on-failure
     deploy:
+      replicas: 3
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -23,7 +24,5 @@ services:
       - ollama:/root/.ollama
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-    entrypoint: ["/root/retry.sh"]
-
 volumes:
   ollama:
