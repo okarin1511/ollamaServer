@@ -2,12 +2,12 @@ import langchain
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from fastapi import FastAPI
-from langchain.llms import VLLM
+from langchain_community.llms import VLLM
 import time
 from gptcache import Cache
 from gptcache.manager.factory import manager_factory
 from gptcache.processor.pre import get_prompt
-from langchain.cache import GPTCache
+from langchain_community.cache import GPTCache
 import hashlib
 import hashlib
 import uvicorn
