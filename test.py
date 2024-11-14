@@ -3,7 +3,7 @@ import json
 import time
 
 # Define the API endpoint
-url = "http://localhost:5001/v1/generateText"
+url = "http://localhost:11434/v1/generateText"
 
 headers = {"Content-Type": "application/json"}
 data = {"prompt": "Who is president of US?"}
