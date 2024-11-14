@@ -11,8 +11,11 @@ from langchain_community.cache import GPTCache
 import hashlib
 import hashlib
 import uvicorn
+from huggingface_hub import login
 
 app = FastAPI()
+
+login("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")
 
 
 def get_hashed_name(name):
@@ -33,7 +36,6 @@ llm = VLLM(
     trust_remote_code=True,  # mandatory for hf models
     max_new_tokens=50,
     temperature=0.6,
-    huggingface_token="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",
 )
 
 
