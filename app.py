@@ -45,7 +45,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/v1/generateText")
+@app.post("/api/generate")
 async def generateText(request: Request) -> Response:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
