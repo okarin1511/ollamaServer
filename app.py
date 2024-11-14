@@ -37,7 +37,7 @@ llm = VLLM(
     max_new_tokens=50,
     temperature=0.6,
     dtype="float16",
-    gpu_memory_utilization=0.9,  # Increase utilization
+    gpu_memory_utilization=1.0,  # Increase utilization
     max_model_len=4096,  # Adjust to a lower value
     max_seq_len=4096,  # Match with reduced `max_model_len`
 )
