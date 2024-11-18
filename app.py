@@ -32,13 +32,11 @@ def init_gptcache(cache_obj: Cache, llm: str):
 
 langchain.llm_cache = GPTCache(init_gptcache)
 llm = VLLM(
-    model="meta-llama/Llama-3.2-3B",
+    model="meta-llama/Llama-3.2-1B-Instruct",
     trust_remote_code=True,  # mandatory for hf models
     max_new_tokens=50,
     temperature=0.6,
     dtype="float16",
-    gpu_memory_utilization=0.8,
-    max_model_len=256,
 )
 
 
