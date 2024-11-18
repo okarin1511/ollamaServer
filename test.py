@@ -15,4 +15,4 @@ end_time = time.time()
 latency = end_time - start_time
 print(f"Latency: {latency} seconds")
 
-print("LLM response: " + response.text)
+print("LLM response: " + response.response)

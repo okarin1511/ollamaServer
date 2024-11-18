@@ -34,7 +34,7 @@ langchain.llm_cache = GPTCache(init_gptcache)
 llm = VLLM(
     model="meta-llama/Llama-3.2-1B-Instruct",
     trust_remote_code=True,  # mandatory for hf models
-    max_new_tokens=50,
+    max_new_tokens=100,
     temperature=0.6,
     dtype="float16",
 )
@@ -51,7 +51,7 @@ async def generateText(request: Request) -> Response:
     prompt = request_dict.pop("prompt")
     output = llm(prompt)
     print("Generated text:", output)
-    ret = {"text": output}
+    ret = {"response": output}
     return JSONResponse(ret)
 
 
