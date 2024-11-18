@@ -38,6 +38,7 @@ llm = VLLM(
     temperature=0.6,
     dtype="float16",
     gpu_memory_utilization=0.9,
+    max_model_len=4096,
 )
 
 
