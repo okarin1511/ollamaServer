@@ -30,9 +30,13 @@ def init_gptcache(cache_obj: Cache, llm: str):
     def check_cache_hit(prompt, *args, **kwargs):
         # Custom pre-embedding function to track cache hit
         result = get_prompt(prompt)
-        cache_hit_status["last_hit"] = cache_obj.has(
-            prompt
-        )  # Check if prompt exists in cache
+
+        # check if the prompt is in the cache
+        if cache_obj.data_manager.get(result):
+            cache_hit_status["last_hit"] = True
+        else:
+            cache_hit_status["last_hit"] = False
+
         return result
 
     cache_obj.init(
