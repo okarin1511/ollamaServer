@@ -17,8 +17,6 @@ app = FastAPI()
 
 login("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")
 
-cache_hit_status = {"last_hit": False}
-
 
 def get_hashed_name(name):
     return hashlib.sha256(name.encode()).hexdigest()
@@ -26,21 +24,8 @@ def get_hashed_name(name):
 
 def init_gptcache(cache_obj: Cache, llm: str):
     hashed_llm = get_hashed_name(llm)
-
-    def check_cache_hit(prompt, *args, **kwargs):
-        # Custom pre-embedding function to track cache hit
-        result = get_prompt(prompt)
-
-        # check if the prompt is in the cache
-        if cache_obj.data_manager.get(result):
-            cache_hit_status["last_hit"] = True
-        else:
-            cache_hit_status["last_hit"] = False
-
-        return result
-
     cache_obj.init(
-        pre_embedding_func=check_cache_hit,
+        pre_embedding_func=get_prompt,
         data_manager=manager_factory(manager="map", data_dir=f"map_cache_{hashed_llm}"),
     )
 
@@ -62,13 +47,17 @@ def read_root():
 
 @app.post("/api/generate")
 async def generateText(request: Request) -> Response:
+    start_time = time.time()
+
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
     output = llm(prompt)
+    end_time = time.time()
+    latency = end_time - start_time
+    print(f"Latency: {latency} seconds")
 
-    from_cache = cache_hit_status["last_hit"]
-    print("Generated text:", output, "| From cache:", from_cache)
-    ret = {"response": output, "from_cache": from_cache}
+    print("Generated text:", output)
+    ret = {"response": output, "latency": latency}
     return JSONResponse(ret)
 
 
