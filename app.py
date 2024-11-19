@@ -41,7 +41,7 @@ def init_gptcache(cache_obj: Cache):
 
 
 init_gptcache(cache)
-langchain.llm_cache = GPTCache(init_gptcache)
+langchain.llm_cache = GPTCache(cache)
 
 
 @app.get("/")
