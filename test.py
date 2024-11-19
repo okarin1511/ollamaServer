@@ -7,7 +7,9 @@ import time
 url = "http://localhost:11434/api/generate"
 
 headers = {"Content-Type": "application/json"}
-data = {"prompt": "Who is the president of the US?"}
+data = {
+    "prompt": "Respond with just the answer without any extra verbosity. Translate this to English: tum kya khaana chahoge?"
+}
 
 start_time = time.time()
 # Make the POST request

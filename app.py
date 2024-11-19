@@ -56,12 +56,14 @@ async def generateText(request: Request) -> JSONResponse:
     # Use max_new_tokens instead of max_length
     output = pipe(prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1)
 
+    llmResponse = output[0]["generated_text"]
+
     end_time = time.time()
     latency = end_time - start_time
     print(f"Latency: {latency} seconds")
 
-    print("Generated text:", output)
-    ret = {"response": output, "latency": latency}
+    print("Generated text:", llmResponse)
+    ret = {"response": llmResponse, "latency": latency}
     return JSONResponse(ret)
 
 
