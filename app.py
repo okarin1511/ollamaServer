@@ -39,7 +39,7 @@ def init_gptcache():
 
 
 # Initialize the cache
-# init_gptcache(cache, "llama-3b")
+init_gptcache()
 # Set up LangChain to use our cache
 langchain.llm_cache = GPTCache(init_gptcache)
 
