@@ -26,6 +26,8 @@ pipe = pipeline(
     trust_remote_code=True,
     max_new_tokens=50,
     temperature=0.2,
+    top_p=0.95,  # Use nucleus sampling to focus on top 95% of options
+    top_k=50,
     device_map="auto",
 )
 

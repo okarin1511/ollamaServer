@@ -7,9 +7,10 @@ url = "http://ec2-43-198-104-59.ap-east-1.compute.amazonaws.com:11434/api/genera
 # url = "http://localhost:11434/api/generate"
 
 headers = {"Content-Type": "application/json"}
-data = {
-    "prompt": "Respond with just the answer without any extra verbosity. Modify this text to make it clearer in English: tum kya khaana chahoge?"
-}
+
+prompt = "Please rephrase this sentence in clear English with no extra explanation or repetition: tum kya khaana chahoge?"
+
+data = {"prompt": prompt}
 
 start_time = time.time()
 # Make the POST request
