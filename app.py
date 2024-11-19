@@ -78,34 +78,14 @@ async def generateText(request: Request) -> JSONResponse:
 
     formatted_prompt = f"[INST] {prompt} [/INST]"
 
-    generation_kwargs = {
-        "max_new_tokens": 100,
-        "num_return_sequences": 1,
-        "do_sample": True,
-        "temperature": 0.2,
-        "top_p": 0.95,
-        "top_k": 50,
-        "remove_invalid_values": True,
-    }
+    llmResponse = llm.invoke(formatted_prompt)
 
-    # Use the model's generate method directly for more control
-    input_ids = tokenizer.encode(formatted_prompt, return_tensors="pt").to(model.device)
-    llmResponse = llm.generate(
-        input_ids,
-        **generation_kwargs,
-        pad_token_id=tokenizer.eos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-    )
-
-    generated_text = tokenizer.decode(
-        llmResponse[0][input_ids.shape[1] :], skip_special_tokens=True
-    ).strip()
     # llmResponse = llm.invoke(formatted_prompt)
-    print("Generated text:", generated_text)
+    print("Generated text:", llmResponse)
 
     end_time = time.time()
     latency = end_time - start_time
     print(f"Latency: {latency} seconds")
 
-    ret = {"response": generated_text, "latency": latency}
+    ret = {"response": llmResponse, "latency": latency}
     return JSONResponse(ret)
