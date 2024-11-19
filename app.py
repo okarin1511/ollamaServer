@@ -26,23 +26,7 @@ pipe = pipeline(
     device_map="auto",
 )
 
-
-class CachedHuggingFacePipeline(HuggingFacePipeline):
-    def __init__(self, pipeline, cache=langchain.llm_cache):
-        super().__init__(pipeline)
-        self.cache = cache
-
-    def call(self, prompt, **kwargs):
-        cached_result = self.cache.lookup(prompt)
-        if cached_result is not None:
-            return cached_result
-        else:
-            output = super().call(prompt, **kwargs)
-            self.cache.update(prompt, output)
-            return output
-
-
-llm = CachedHuggingFacePipeline(pipe)
+llm = HuggingFacePipeline(pipeline=pipe)
 
 
 def get_hashed_name(name):
