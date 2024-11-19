@@ -26,7 +26,23 @@ pipe = pipeline(
     device_map="auto",
 )
 
-llm = HuggingFacePipeline(pipeline=pipe)
+
+class CachedHuggingFacePipeline(HuggingFacePipeline):
+    def __init__(self, pipeline, cache=langchain.llm_cache):
+        super().__init__(pipeline)
+        self.cache = cache
+
+    def call(self, prompt, **kwargs):
+        cached_result = self.cache.lookup(prompt)
+        if cached_result is not None:
+            return cached_result
+        else:
+            output = super().call(prompt, **kwargs)
+            self.cache.update(prompt, output)
+            return output
+
+
+llm = CachedHuggingFacePipeline(pipe)
 
 
 def get_hashed_name(name):
@@ -57,7 +73,7 @@ async def generateText(request: Request) -> JSONResponse:
     prompt = request_dict.pop("prompt")
 
     # Use max_new_tokens instead of max_length
-    output = pipe(prompt, max_new_tokens=100, temperature=0.2, num_return_sequences=1)
+    output = llm(prompt, max_new_tokens=100, temperature=0.2, num_return_sequences=1)
 
     llmResponse = output[0]["generated_text"]
 
