@@ -59,6 +59,16 @@ async def generateText(request: Request) -> JSONResponse:
     # Use max_new_tokens instead of max_length
     output = llm.invoke(prompt)
 
+    output = llm.invoke(
+        prompt,
+        max_new_tokens=100,
+        temperature=0.3,
+        generate_kwargs={
+            "max_new_tokens": 100,
+            "max_length": None,
+        },  # Ensure no max_length interference
+    )
+
     llmResponse = output[0]["generated_text"]
 
     end_time = time.time()
