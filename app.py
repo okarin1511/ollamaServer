@@ -98,12 +98,16 @@ async def generateText(request: Request) -> JSONResponse:
         pad_token_id=tokenizer.eos_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
+
+    generated_text = tokenizer.decode(
+        llmResponse[0][input_ids.shape[1] :], skip_special_tokens=True
+    ).strip()
     # llmResponse = llm.invoke(formatted_prompt)
-    print("Generated text:", llmResponse)
+    print("Generated text:", generated_text)
 
     end_time = time.time()
     latency = end_time - start_time
     print(f"Latency: {latency} seconds")
 
-    ret = {"response": llmResponse, "latency": latency}
+    ret = {"response": generated_text, "latency": latency}
     return JSONResponse(ret)
