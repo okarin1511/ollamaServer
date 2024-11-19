@@ -35,16 +35,12 @@ def init_gptcache(cache_obj: Cache, llm: str):
             data_dir=f"cache_{hashed_llm}",
             vector_params={"dimension": 768, "similarity_threshold": 0.85},
         ),
-        config=Config(
-            similarity_threshold=0.85,
-            embed_model=embedding,
-        ),
+        config=Config(similarity_threshold=0.85),
     )
 
 
 # Initialize the cache
-init_gptcache(cache, "llama-3b")
-langchain.llm_cache = GPTCache(init_gptcache)
+init_gptcache()
 
 login("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")
 
@@ -71,7 +67,7 @@ async def generateText(request: Request) -> JSONResponse:
     prompt = request_dict.pop("prompt")
 
     # Check cache for similar prompts
-    cached_result = cache.get(prompt)
+    cached_result = cache.get(prompt, embedding_func=embedding.to_embeddings)
 
     if cached_result is not None:
         llmResponse = cached_result
@@ -84,7 +80,7 @@ async def generateText(request: Request) -> JSONResponse:
         llmResponse = output[0]["generated_text"]
 
         # Store the result in cache
-        cache.put(prompt, llmResponse)
+        cache.put(prompt, llmResponse, embedding_func=embedding.to_embeddings)
         print("Stored new result in cache")
 
     end_time = time.time()
