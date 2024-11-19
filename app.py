@@ -2,9 +2,10 @@ import langchain
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import time
-from gptcache import Cache, Config
+from gptcache import Cache, Config, cache as global_cache
 from gptcache.manager.factory import manager_factory
 from gptcache.adapter.api import get, put
+from gptcache.processor.pre import get_prompt
 from gptcache.embedding import Onnx
 from langchain_community.cache import GPTCache
 import hashlib
@@ -14,32 +15,6 @@ import torch
 from transformers import pipeline
 
 app = FastAPI()
-
-# Initialize cache with similarity search
-cache = Cache()
-embedding = Onnx()
-
-
-def init_gptcache():
-    cache_dir = "cache_similarity_search"
-
-    # Configure cache with explicit similarity search settings
-    cache.init(
-        embedding_func=embedding.to_embeddings,  # Convert prompts to vectors
-        data_manager=manager_factory(
-            manager="map",
-            data_dir=cache_dir,
-            vector_params={"dimension": 768, "similarity_threshold": 0.85},
-        ),
-        config=Config(similarity_threshold=0.75),
-    )
-
-
-# Initialize the cache once at the beginning
-init_gptcache()
-
-# Set up LangChain to use our cache
-langchain.llm_cache = GPTCache(cache)
 
 login("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")
 
@@ -51,6 +26,25 @@ pipe = pipeline(
     trust_remote_code=True,
     device_map="auto",
 )
+
+# Initialize cache with similarity search
+cache = Cache()
+embedding = Onnx()
+
+
+def init_gptcache(cache_obj: Cache, llm: str):
+    cache_obj.init(
+        pre_embedding_func=get_prompt,
+        data_manager=manager_factory(manager="map", data_dir="cache_similarity_search"),
+        config=Config(similarity_threshold=0.75),
+    )
+
+    global_cache.register(cache_obj)
+
+
+init_gptcache(cache)
+
+langchain.llm_cache = GPTCache(init_gptcache)
 
 
 @app.get("/")
