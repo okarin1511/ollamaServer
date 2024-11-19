@@ -76,11 +76,12 @@ async def generateText(request: Request) -> JSONResponse:
 
     print("PROMPT", prompt)
 
-    formatted_prompt = f"[INST] {prompt} [/INST]"
+    llmResponse = llm.invoke(prompt)
 
-    llmResponse = llm.invoke(formatted_prompt)
+    if prompt in llmResponse:
+        print("prompt is in response")
+        llmResponse = llmResponse.replace(prompt, "").strip()
 
-    # llmResponse = llm.invoke(formatted_prompt)
     print("Generated text:", llmResponse)
 
     end_time = time.time()
