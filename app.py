@@ -5,7 +5,6 @@ import time
 from gptcache import Cache, Config
 from gptcache.manager.factory import manager_factory
 from gptcache.adapter.api import get, put
-from gptcache.processor.pre import get_prompt
 from gptcache.embedding import Onnx
 from langchain_community.cache import GPTCache
 import hashlib
@@ -34,7 +33,7 @@ embedding = Onnx()
 
 def init_gptcache(cache_obj: Cache):
     cache_obj.init(
-        pre_embedding_func=get_prompt,
+        embedding_func=embedding.to_embeddings,
         data_manager=manager_factory(manager="map", data_dir="cache_similarity_search"),
         config=Config(similarity_threshold=0.75),
     )
