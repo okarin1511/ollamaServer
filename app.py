@@ -35,8 +35,8 @@ llm = VLLM(
     model="meta-llama/Llama-3.2-3B-Instruct",
     trust_remote_code=True,  # mandatory for hf models
     max_new_tokens=75,
-    temperature=0.6,
-    dtype="int8",
+    temperature=0.3,
+    dtype="float16",
     gpu_memory_utilization="0.95",
 )
 
