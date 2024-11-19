@@ -10,6 +10,7 @@ import hashlib
 import uvicorn
 from huggingface_hub import login
 from langchain_huggingface import HuggingFacePipeline
+from transformers import AutoConfig
 import torch
 from transformers import pipeline
 
@@ -67,12 +68,19 @@ async def generateText(request: Request) -> JSONResponse:
     #     },  # Ensure no max_length interference
     # )
 
-    output = llm.generate(
-        [prompt],
-        max_new_tokens=1000,
-        max_length=None,
-        temperature=0.3,  # Ensure no max_length interference
-    )
+    # output = llm.generate(
+    #     [prompt],
+    #     max_new_tokens=1000,
+    #     max_length=None,
+    #     temperature=0.3,  # Ensure no max_length interference
+    # )
+
+    output = [{"generated_text": prompt}]
+
+    print(f"Hit: {prompt}")
+
+    config = AutoConfig.from_pretrained(model_id)
+    print(f"Model's max position embeddings: {config.max_position_embeddings}")
 
     llmResponse = output[0]["generated_text"]
 
