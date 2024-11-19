@@ -34,12 +34,14 @@ pipe = pipeline(
     max_new_tokens=100,
     temperature=0.2,
     tokenizer=tokenizer,
+    do_sample=True,
     top_p=0.95,  # Use nucleus sampling to focus on top 95% of options
     top_k=50,
     pad_token_id=tokenizer.eos_token_id,
     eos_token_id=tokenizer.eos_token_id,
     device_map="auto",
     return_full_text=False,
+    clean_up_tokenization_spaces=True,
 )
 
 llm = HuggingFacePipeline(pipeline=pipe)
@@ -71,6 +73,8 @@ async def generateText(request: Request) -> JSONResponse:
 
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
+
+    print("PROMPT", prompt)
 
     formatted_prompt = f"[INST] {prompt} [/INST]"
 

@@ -8,7 +8,8 @@ url = "http://ec2-43-198-104-59.ap-east-1.compute.amazonaws.com:11434/api/genera
 
 headers = {"Content-Type": "application/json"}
 
-prompt = "strictly only respond with the output: Please rephrase this sentence in clear English with no extra explanation or repetition: tum kya khaana chahoge?"
+# prompt = "Translate this sentence in clear English with no extra explanation or repetition. only the output without adding any verbosity like 'Translation:' etc: tum kya khaana chahoge?"
+prompt = "Translate this in English with no extra explanation or repetition. only the output without adding any verbosity like 'Translation:' etc: tum kya khaana chahoge?"
 
 data = {"prompt": prompt}
 
