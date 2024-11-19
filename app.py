@@ -61,7 +61,9 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    llmResponse = llm.invoke(prompt)
+    llmResponse = llm.invoke([prompt])
+
+    print("OUTPUTT", llmResponse)
 
     end_time = time.time()
     latency = end_time - start_time
