@@ -2,8 +2,9 @@ import langchain
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import time
-from gptcache import Cache
-from gptcache.adapter.api import init_similar_cache
+from gptcache import Cache, Config
+from gptcache.manager.factory import manager_factory
+from gptcache.adapter.api import get, put
 from gptcache.embedding import Onnx
 from langchain_community.cache import GPTCache
 import hashlib
@@ -19,13 +20,26 @@ cache = Cache()
 embedding = Onnx()
 
 
-def init_gptcache(cache_obj: Cache, llm: str):
-    # Initialize a semantic cache for similarity search
-    init_similar_cache(cache_obj, similarity_threshold=0.75)
+def init_gptcache():
+    cache_dir = "cache_similarity_search"
+
+    # Configure cache with explicit similarity search settings
+    cache.init(
+        embedding_func=embedding.to_embeddings,  # Convert prompts to vectors
+        data_manager=manager_factory(
+            manager="map",
+            data_dir=cache_dir,
+            vector_params={"dimension": 768, "similarity_threshold": 0.85},
+        ),
+        config=Config(
+            similarity_threshold=0.75,
+            embed_model=embedding,
+        ),
+    )
 
 
 # Initialize the cache
-init_gptcache(cache, "llama-3b")
+# init_gptcache(cache, "llama-3b")
 # Set up LangChain to use our cache
 langchain.llm_cache = GPTCache(init_gptcache)
 
@@ -53,19 +67,20 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    try:
-        cached_answer = cache.import_data(prompt).value
-        print(f"Cache hit! Found similar prompt. Using cached result: {cached_answer}")
-        llmResponse = cached_answer
-    except:
+    cached_result = get(prompt)
+
+    if cached_result is not None:
+        llmResponse = cached_result
+        print(f"Cache hit! Found similar prompt. Using cached result: {llmResponse}")
+    else:
         print("Cache miss! Generating new text.")
         output = pipe(
             prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1
         )
         llmResponse = output[0]["generated_text"]
 
-        # Store the result in cache
-        cache.export_data(prompt, llmResponse)
+        # Store the result in cache with embeddings
+        put(prompt, llmResponse)
         print("Stored new result in cache")
 
     end_time = time.time()
