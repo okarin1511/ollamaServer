@@ -70,7 +70,6 @@ async def generateText(request: Request) -> JSONResponse:
     output = llm.generate(
         [prompt],
         max_new_tokens=1000,
-        max_length=1000,
         temperature=0.3,  # Ensure no max_length interference
     )
 
