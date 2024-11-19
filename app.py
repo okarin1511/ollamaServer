@@ -9,7 +9,7 @@ from langchain_community.cache import GPTCache
 import hashlib
 import uvicorn
 from huggingface_hub import login
-from langchain_community.llms import HuggingFacePipeline
+from langchain_huggingface import HuggingFacePipeline
 import torch
 from transformers import pipeline
 
