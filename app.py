@@ -90,7 +90,7 @@ async def generateText(request: Request) -> JSONResponse:
 
     # Use the model's generate method directly for more control
     input_ids = tokenizer.encode(formatted_prompt, return_tensors="pt").to(model.device)
-    llmResponse = model.generate(
+    llmResponse = llm.generate(
         input_ids,
         **generation_kwargs,
         pad_token_id=tokenizer.eos_token_id,
