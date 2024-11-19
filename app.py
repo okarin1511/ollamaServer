@@ -27,7 +27,7 @@ pipe = pipeline(
 )
 
 # Initialize cache with similarity search
-cache = Cache()
+# cache = Cache()
 embedding = Onnx()
 
 
@@ -39,8 +39,8 @@ def init_gptcache(cache_obj: Cache):
     )
 
 
-init_gptcache(cache)
-langchain.llm_cache = GPTCache(cache)
+# init_gptcache(cache)
+langchain.llm_cache = GPTCache(init_gptcache)
 
 
 @app.get("/")
@@ -56,9 +56,13 @@ async def generateText(request: Request) -> JSONResponse:
     prompt = request_dict.pop("prompt")
 
     # Check if the prompt is cached
-    cached_result = get(prompt)
+    cached_result = ""
+    try:
+        cached_result = get(prompt)
+    except:
+        print("Cache not available at this time")
 
-    if cached_result is not None:
+    if cached_result:
         llmResponse = cached_result
         print(f"Cache hit! Found similar prompt. Using cached result: {llmResponse}")
     else:
@@ -69,7 +73,11 @@ async def generateText(request: Request) -> JSONResponse:
         llmResponse = output[0]["generated_text"]
 
         # Store the result in cache with embeddings
-        put(prompt, llmResponse)
+        try:
+            put(prompt, llmResponse)
+        except:
+            print("Cache not available at this time")
+
         print("Stored new result in cache")
 
     end_time = time.time()
