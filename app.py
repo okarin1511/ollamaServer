@@ -53,10 +53,22 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    # Use max_new_tokens instead of max_length
-    output = pipe(prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1)
+    # Check if the result is cached
+    cached_result = langchain.llm_cache.get(prompt)
 
-    llmResponse = output[0]["generated_text"]
+    if cached_result:
+        # If cached, use the cached result
+        llmResponse = cached_result
+        print("Cache hit! Using cached result.", llmResponse)
+    else:
+        # Otherwise, generate new text and store it in the cache
+        print("Cache miss! Generating new text.")
+        output = pipe(
+            prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1
+        )
+        llmResponse = output[0]["generated_text"]
+        # Store the result in the cache
+        langchain.llm_cache.set(prompt, llmResponse)
 
     end_time = time.time()
     latency = end_time - start_time
