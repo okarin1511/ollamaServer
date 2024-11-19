@@ -1,13 +1,11 @@
 import langchain
-from fastapi import BackgroundTasks, FastAPI, Request
-from fastapi.responses import JSONResponse, Response, StreamingResponse
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 import time
 from gptcache import Cache
 from gptcache.manager.factory import manager_factory
 from gptcache.processor.pre import get_prompt
 from langchain_community.cache import GPTCache
-import hashlib
 import hashlib
 import uvicorn
 from huggingface_hub import login
@@ -49,13 +47,15 @@ def read_root():
 
 
 @app.post("/api/generate")
-async def generateText(request: Request) -> Response:
+async def generateText(request: Request) -> JSONResponse:
     start_time = time.time()
 
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
-    # output = llm(prompt)
-    output = pipe(prompt, max_length=100, temperature=0.3, num_return_sequences=1)
+
+    # Use max_new_tokens instead of max_length
+    output = pipe(prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1)
+
     end_time = time.time()
     latency = end_time - start_time
     print(f"Latency: {latency} seconds")
