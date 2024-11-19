@@ -3,10 +3,11 @@ import json
 import time
 
 # Define the API endpoint
-url = "http://localhost:11434/v1/generateText"
+# url = "http://ec2-43-198-104-59.ap-east-1.compute.amazonaws.com:11434/api/generate"
+url = "http://localhost:11434/api/generate"
 
 headers = {"Content-Type": "application/json"}
-data = {"prompt": "Who is president of US?"}
+data = {"prompt": "Who is the president of the US?"}
 
 start_time = time.time()
 # Make the POST request
