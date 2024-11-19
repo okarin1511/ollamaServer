@@ -32,7 +32,7 @@ cache = Cache()
 embedding = Onnx()
 
 
-def init_gptcache(cache_obj: Cache, llm: str):
+def init_gptcache(cache_obj: Cache):
     cache_obj.init(
         pre_embedding_func=get_prompt,
         data_manager=manager_factory(manager="map", data_dir="cache_similarity_search"),
