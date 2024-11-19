@@ -56,9 +56,6 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    # Use max_new_tokens instead of max_length
-    output = llm.invoke(prompt)
-
     output = llm.invoke(
         prompt,
         max_new_tokens=100,
