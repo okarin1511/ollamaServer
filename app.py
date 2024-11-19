@@ -54,7 +54,10 @@ async def generateText(request: Request) -> JSONResponse:
     prompt = request_dict.pop("prompt")
 
     # Check if the result is cached
-    cached_result = langchain.llm_cache.get(prompt)
+    cache_manager = langchain.llm_cache.cache
+
+    # Check if the result is cached
+    cached_result = cache_manager.get(prompt)
 
     if cached_result:
         # If cached, use the cached result
@@ -68,7 +71,7 @@ async def generateText(request: Request) -> JSONResponse:
         )
         llmResponse = output[0]["generated_text"]
         # Store the result in the cache
-        langchain.llm_cache.set(prompt, llmResponse)
+        cache_manager.set(prompt, llmResponse)
 
     end_time = time.time()
     latency = end_time - start_time
