@@ -67,13 +67,6 @@ async def generateText(request: Request) -> JSONResponse:
     #     temperature=0.3,  # Ensure no max_length interference
     # )
 
-    output = [{"generated_text": prompt}]
-
-    print(f"Hit: {prompt}")
-
-    config = AutoConfig.from_pretrained(model_id)
-    print(f"Model's max position embeddings: {config.max_position_embeddings}")
-
     llmResponse = output[0]["generated_text"]
 
     end_time = time.time()
