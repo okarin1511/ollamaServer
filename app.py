@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 import time
 from gptcache import Cache
 from gptcache.adapter.api import init_similar_cache
+from gptcache.embedding import Onnx
 from langchain_community.cache import GPTCache
 import hashlib
 import uvicorn
