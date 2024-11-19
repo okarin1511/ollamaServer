@@ -35,10 +35,11 @@ def init_gptcache():
     )
 
 
-# Initialize the cache
-langchain_cache = init_gptcache()
+# Initialize the cache once at the beginning
+init_gptcache()
+
 # Set up LangChain to use our cache
-langchain.llm_cache = GPTCache(langchain_cache)
+langchain.llm_cache = GPTCache(cache)
 
 login("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")
 
@@ -64,6 +65,7 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
+    # Check if the prompt is cached
     cached_result = get(prompt)
 
     if cached_result is not None:
