@@ -4,12 +4,12 @@ from fastapi.responses import JSONResponse
 import time
 from gptcache import Cache, Config
 from gptcache.manager.factory import manager_factory
-from gptcache.adapter.api import get, put
-from gptcache.embedding import Onnx
+from gptcache.processor.pre import get_prompt
 from langchain_community.cache import GPTCache
 import hashlib
 import uvicorn
 from huggingface_hub import login
+from langchain.llms import HuggingFacePipeline
 import torch
 from transformers import pipeline
 
@@ -26,20 +26,24 @@ pipe = pipeline(
     device_map="auto",
 )
 
-# Initialize cache with similarity search
-# cache = Cache()
-embedding = Onnx()
+llm = HuggingFacePipeline(pipeline=pipe)
 
 
-def init_gptcache(cache_obj: Cache):
+def get_hashed_name(name):
+    return hashlib.sha256(name.encode()).hexdigest()
+
+
+def init_gptcache(cache_obj: Cache, llm: str):
+    hashed_llm = get_hashed_name(llm)
     cache_obj.init(
-        embedding_func=embedding.to_embeddings,
-        data_manager=manager_factory(manager="map", data_dir="cache_similarity_search"),
-        config=Config(similarity_threshold=0.75),
+        pre_embedding_func=get_prompt,
+        data_manager=manager_factory(manager="map", data_dir=f"map_cache_{hashed_llm}"),
+        config=Config(
+            similarity_threshold=0.75,
+        ),
     )
 
 
-# init_gptcache(cache)
 langchain.llm_cache = GPTCache(init_gptcache)
 
 
@@ -55,30 +59,10 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    # Check if the prompt is cached
-    cached_result = ""
-    try:
-        cached_result = get(prompt)
-    except:
-        print("Cache not available at this time")
+    # Use max_new_tokens instead of max_length
+    output = pipe(prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1)
 
-    if cached_result:
-        llmResponse = cached_result
-        print(f"Cache hit! Found similar prompt. Using cached result: {llmResponse}")
-    else:
-        print("Cache miss! Generating new text.")
-        output = pipe(
-            prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1
-        )
-        llmResponse = output[0]["generated_text"]
-
-        # Store the result in cache with embeddings
-        try:
-            put(prompt, llmResponse)
-        except:
-            print("Cache not available at this time")
-
-        print("Stored new result in cache")
+    llmResponse = output[0]["generated_text"]
 
     end_time = time.time()
     latency = end_time - start_time
@@ -87,7 +71,3 @@ async def generateText(request: Request) -> JSONResponse:
     print("Generated text:", llmResponse)
     ret = {"response": llmResponse, "latency": latency}
     return JSONResponse(ret)
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=11434)
