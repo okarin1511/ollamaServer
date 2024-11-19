@@ -31,10 +31,7 @@ def init_gptcache():
             data_dir=cache_dir,
             vector_params={"dimension": 768, "similarity_threshold": 0.85},
         ),
-        config=Config(
-            similarity_threshold=0.75,
-            embed_model=embedding,
-        ),
+        config=Config(similarity_threshold=0.75),
     )
 
 
