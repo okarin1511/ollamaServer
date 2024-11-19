@@ -86,7 +86,6 @@ async def generateText(request: Request) -> JSONResponse:
         "top_p": 0.95,
         "top_k": 50,
         "remove_invalid_values": True,
-        "clean_up_tokenization_spaces": True,
     }
 
     # Generate response
