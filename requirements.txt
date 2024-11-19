@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+torch
+transformers
+langchain
+gptcache
+huggingface_hub
+python-multipart
+langchain-community
+langchain-huggingface

@@ -1,21 +1,28 @@
+# Standard library imports
+import os
+import time
+import hashlib
+
+# Third-party library imports
+import torch
 import langchain
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-import time
-from gptcache import Cache, Config
+from huggingface_hub import login
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
+# Specialized library imports
+from gptcache import Cache
 from gptcache.manager.factory import manager_factory
 from gptcache.processor.pre import get_prompt
 from langchain_community.cache import GPTCache
-import hashlib
-import uvicorn
-from huggingface_hub import login
 from langchain_huggingface import HuggingFacePipeline
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 app = FastAPI()
 
-login("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")
+hf_token = os.getenv("HF_TOKEN")
+
+login(hf_token)
 
 model_id = "meta-llama/Llama-3.2-3B-Instruct"
 
@@ -74,19 +81,13 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    print("PROMPT", prompt)
-
     llmResponse = llm.invoke(prompt)
 
     if prompt in llmResponse:
-        print("prompt is in response")
         llmResponse = llmResponse.replace(prompt, "").strip()
-
-    print("Generated text:", llmResponse)
 
     end_time = time.time()
     latency = end_time - start_time
-    print(f"Latency: {latency} seconds")
 
     ret = {"response": llmResponse, "latency": latency}
     return JSONResponse(ret)
