@@ -9,7 +9,7 @@ from langchain_community.cache import GPTCache
 import hashlib
 import uvicorn
 from huggingface_hub import login
-from langchain.llms import HuggingFacePipeline
+from langchain_community.llms import HuggingFacePipeline
 import torch
 from transformers import pipeline
 
@@ -38,9 +38,6 @@ def init_gptcache(cache_obj: Cache, llm: str):
     cache_obj.init(
         pre_embedding_func=get_prompt,
         data_manager=manager_factory(manager="map", data_dir=f"map_cache_{hashed_llm}"),
-        config=Config(
-            similarity_threshold=0.75,
-        ),
     )
 
 
@@ -60,7 +57,7 @@ async def generateText(request: Request) -> JSONResponse:
     prompt = request_dict.pop("prompt")
 
     # Use max_new_tokens instead of max_length
-    output = pipe(prompt, max_new_tokens=100, temperature=0.3, num_return_sequences=1)
+    output = pipe(prompt, max_new_tokens=100, temperature=0.2, num_return_sequences=1)
 
     llmResponse = output[0]["generated_text"]
 
