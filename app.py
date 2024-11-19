@@ -67,6 +67,8 @@ async def generateText(request: Request) -> JSONResponse:
     #     temperature=0.3,  # Ensure no max_length interference
     # )
 
+    print("Outputttt", output)
+
     llmResponse = output[0]["generated_text"]
 
     end_time = time.time()
