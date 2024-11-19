@@ -2,7 +2,6 @@ import langchain
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from fastapi import FastAPI
-from langchain_community.llms import VLLM
 import time
 from gptcache import Cache
 from gptcache.manager.factory import manager_factory
@@ -12,10 +11,21 @@ import hashlib
 import hashlib
 import uvicorn
 from huggingface_hub import login
+import torch
+from transformers import pipeline
 
 app = FastAPI()
 
 login("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")
+
+model_id = "meta-llama/Llama-3.2-3B-Instruct"
+pipe = pipeline(
+    "text-generation",
+    model=model_id,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",
+)
 
 
 def get_hashed_name(name):
@@ -31,14 +41,6 @@ def init_gptcache(cache_obj: Cache, llm: str):
 
 
 langchain.llm_cache = GPTCache(init_gptcache)
-llm = VLLM(
-    model="meta-llama/Llama-3.2-3B-Instruct",
-    trust_remote_code=True,  # mandatory for hf models
-    max_new_tokens=75,
-    temperature=0.3,
-    dtype="float16",
-    gpu_memory_utilization="0.95",
-)
 
 
 @app.get("/")
@@ -52,7 +54,8 @@ async def generateText(request: Request) -> Response:
 
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
-    output = llm(prompt)
+    # output = llm(prompt)
+    output = pipe(prompt, max_length=100, temperature=0.3, num_return_sequences=1)
     end_time = time.time()
     latency = end_time - start_time
     print(f"Latency: {latency} seconds")
