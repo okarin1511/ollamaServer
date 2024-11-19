@@ -79,7 +79,7 @@ async def generateText(request: Request) -> JSONResponse:
     formatted_prompt = f"[INST] {prompt} [/INST]"
 
     generation_kwargs = {
-        "max_new_tokens": 50,
+        "max_new_tokens": 100,
         "num_return_sequences": 1,
         "do_sample": True,
         "temperature": 0.2,
@@ -87,8 +87,6 @@ async def generateText(request: Request) -> JSONResponse:
         "top_k": 50,
         "remove_invalid_values": True,
     }
-
-    # Generate response
 
     # Use the model's generate method directly for more control
     input_ids = tokenizer.encode(formatted_prompt, return_tensors="pt").to(model.device)
