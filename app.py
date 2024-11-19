@@ -36,7 +36,7 @@ llm = VLLM(
     trust_remote_code=True,  # mandatory for hf models
     max_new_tokens=75,
     temperature=0.6,
-    dtype="float8",
+    dtype="int8",
     gpu_memory_utilization="0.95",
 )
 
