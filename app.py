@@ -24,7 +24,8 @@ pipe = pipeline(
     model=model_id,
     torch_dtype=torch.bfloat16,
     trust_remote_code=True,
-    max_new_tokens=1000,
+    max_new_tokens=500,
+    temperature=0.2,
     device_map="auto",
 )
 
@@ -58,18 +59,7 @@ async def generateText(request: Request) -> JSONResponse:
     request_dict = await request.json()
     prompt = request_dict.pop("prompt")
 
-    output = llm.invoke(prompt)
-
-    # output = llm.generate(
-    #     [prompt],
-    #     max_new_tokens=1000,
-    #     max_length=None,
-    #     temperature=0.3,  # Ensure no max_length interference
-    # )
-
-    print("Outputttt", output)
-
-    llmResponse = output[0]["generated_text"]
+    llmResponse = llm.invoke(prompt)
 
     end_time = time.time()
     latency = end_time - start_time
