@@ -40,7 +40,7 @@ def init_gptcache(cache_obj: Cache, llm: str):
 
 
 # Initialize the cache
-init_gptcache()
+init_gptcache(cache, "llama-3b")
 
 login("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")
 
