@@ -24,7 +24,7 @@ pipe = pipeline(
     model=model_id,
     torch_dtype=torch.bfloat16,
     trust_remote_code=True,
-    max_new_tokens=150,
+    max_new_tokens=500,
     temperature=0.2,
     device_map="auto",
 )
