@@ -2,7 +2,7 @@ import langchain
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import time
-from gptcache import Cache, Config, cache as global_cache
+from gptcache import Cache, Config
 from gptcache.manager.factory import manager_factory
 from gptcache.adapter.api import get, put
 from gptcache.processor.pre import get_prompt
@@ -39,11 +39,8 @@ def init_gptcache(cache_obj: Cache):
         config=Config(similarity_threshold=0.75),
     )
 
-    global_cache.register(cache_obj)
-
 
 init_gptcache(cache)
-
 langchain.llm_cache = GPTCache(init_gptcache)
 
 
